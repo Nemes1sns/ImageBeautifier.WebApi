@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ImageBeautifier.WebApi.Infrastructure.Validation;
 using ImageBeautifier.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,5 +18,5 @@ public sealed class ImageController : ControllerBase
     }
     
     [HttpPost]
-    public async Task Upload([Required]IFormFile file) => await _imageService.UploadImageAsync(file);
+    public async Task<Guid> Upload([Required][Image]IFormFile file) => await _imageService.UploadImageAsync(file);
 }

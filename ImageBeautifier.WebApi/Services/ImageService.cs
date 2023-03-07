@@ -4,8 +4,8 @@ namespace ImageBeautifier.WebApi.Services;
 
 internal sealed class ImageService : IImageService
 {
-    public async Task UploadImageAsync(IFormFile file)
+    public async Task<Guid> UploadImageAsync(IFormFile file)
     {
-        
+        return Guid.NewGuid();
     }
 }

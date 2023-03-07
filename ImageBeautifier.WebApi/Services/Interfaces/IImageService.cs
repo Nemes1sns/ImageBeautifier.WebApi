@@ -2,5 +2,5 @@ namespace ImageBeautifier.WebApi.Services.Interfaces;
 
 public interface IImageService
 {
-    Task UploadImageAsync(IFormFile file);
+    Task<Guid> UploadImageAsync(IFormFile file);
 }
