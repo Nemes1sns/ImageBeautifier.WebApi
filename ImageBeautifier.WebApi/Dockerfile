@@ -1,20 +1,19 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 as build
+ 
 WORKDIR /src
-COPY ["ImageBeautifier.WebApi/ImageBeautifier.WebApi.csproj", "ImageBeautifier.WebApi/"]
-RUN dotnet restore "ImageBeautifier.WebApi/ImageBeautifier.WebApi.csproj"
-COPY . .
-WORKDIR "/src/ImageBeautifier.WebApi"
-RUN dotnet build "ImageBeautifier.WebApi.csproj" -c Release -o /app/build
+COPY *.csproj ./
+RUN dotnet restore
+ 
+COPY . ./
+RUN dotnet build -o /app
+RUN dotnet publish -o /publish
+ 
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 as base
+COPY --from=build  /publish /app
 
-FROM build AS publish
-RUN dotnet publish "ImageBeautifier.WebApi.csproj" -c Release -o /app/publish
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://+:5200/
+EXPOSE 5200
 
-FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ImageBeautifier.WebApi.dll"]
+CMD ["./ImageBeautifier.WebApi"]
