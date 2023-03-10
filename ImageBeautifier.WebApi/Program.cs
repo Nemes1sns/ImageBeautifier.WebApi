@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using ImageBeautifier.WebApi.Services;
 using ImageBeautifier.WebApi.Services.Interfaces;
 
@@ -6,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IImageService, ImageService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -17,6 +19,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
+
+var awsOptions = builder.Configuration.GetAWSOptions();
+builder.Services.AddDefaultAWSOptions(awsOptions);
+builder.Services.AddAWSService<IAmazonDynamoDB>();
+builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
 var app = builder.Build();
 
