@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ImageBeautifier.WebApi.Services;
 using ImageBeautifier.WebApi.Services.Interfaces;
 
@@ -7,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IImageService, ImageService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
