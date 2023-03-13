@@ -7,23 +7,31 @@ namespace ImageBeautifier.WebApi.Services;
 internal sealed class ImageService : IImageService
 {
     private readonly IDynamoDBContext _context;
+    private readonly IImageStorage _imageStorage;
+    private readonly IMessageClient _messageClient;
 
-    public ImageService(IDynamoDBContext context)
+    public ImageService(
+        IDynamoDBContext context, 
+        IImageStorage imageStorage,
+        IMessageClient messageClient)
     {
         _context = context;
+        _imageStorage = imageStorage;
+        _messageClient = messageClient;
     }
     
     public async Task<Guid> UploadImageAsync(IFormFile file, CancellationToken cancellationToken)
     {
+        var path = await _imageStorage.UploadImageAsync(file, cancellationToken);
         var task = new BeautifierTask
         {
             Id = Guid.NewGuid(),
             State = BeautifierTaskState.Created,
             FileName = file.FileName,
-            OriginalFilePath = "path"
-            
+            OriginalFilePath = path
         };
         await _context.SaveAsync(task, cancellationToken);
+        await _messageClient.SendMessageAsync(task, cancellationToken);
         return task.Id;
     }
 
