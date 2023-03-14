@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using ImageBeautifier.WebApi.Infrastructure.Exceptions;
 using ImageBeautifier.WebApi.Models;
 using ImageBeautifier.WebApi.Models.Response;
 using ImageBeautifier.WebApi.Services.Interfaces;
@@ -41,7 +42,7 @@ internal sealed class ImageService : IImageService
         var task = await _context.LoadAsync<BeautifierTask>(id, cancellationToken);
         if (task == null)
         {
-            throw new InvalidOperationException();
+            throw new NotFoundException($"The task '{id}' hasn't been found.");
         }
 
         var imageUrl = !string.IsNullOrEmpty(task.FinishedFilePath)

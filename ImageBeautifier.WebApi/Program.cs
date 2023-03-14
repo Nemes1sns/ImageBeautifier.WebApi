@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
 using Amazon.SQS;
 using ImageBeautifier.WebApi.Infrastructure.Configuration;
+using ImageBeautifier.WebApi.Infrastructure.Filters;
 using ImageBeautifier.WebApi.Services;
 using ImageBeautifier.WebApi.Services.Interfaces;
 
@@ -15,11 +16,12 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IImageStorage, ImageStorage>();
 builder.Services.AddScoped<IMessageClient, MessageClient>();
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-});
+builder.Services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>())
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
