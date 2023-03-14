@@ -30,4 +30,7 @@ internal sealed class ImageStorage : IImageStorage
         await _amazonS3.PutObjectAsync(request, cancellationToken);
         return request.Key;
     }
+
+    public string GetPublicUrl(string key) 
+        => $"https://{_awsEnvironmentOptions.BucketName}.s3.amazonaws.com/{key.Replace(' ', '+')}";
 }

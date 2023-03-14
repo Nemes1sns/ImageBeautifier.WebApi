@@ -3,4 +3,6 @@
 internal interface IImageStorage
 {
     Task<string> UploadImageAsync(IFormFile file, CancellationToken cancellationToken);
+
+    string GetPublicUrl(string key);
 }

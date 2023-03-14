@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ImageBeautifier.WebApi.Infrastructure.Validation;
-using ImageBeautifier.WebApi.Models;
+using ImageBeautifier.WebApi.Models.Response;
 using ImageBeautifier.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,6 @@ public sealed class ImageController : ControllerBase
 {
     private readonly IImageService _imageService;
 
-    // private readonly ILogger<ImageController> _logger;
     public ImageController(IImageService imageService)
     {
         _imageService = imageService;
@@ -23,6 +22,6 @@ public sealed class ImageController : ControllerBase
         => await _imageService.UploadImageAsync(file, cancellationToken);
     
     [HttpGet("{id:guid}")]
-    public async Task<BeautifierTaskState> GetCurrentState([Required]Guid id, CancellationToken cancellationToken) 
+    public async Task<GetBeautifiedImageResponse> GetBeautifiedImage([Required]Guid id, CancellationToken cancellationToken) 
         => await _imageService.GetCurrentStateAsync(id, cancellationToken);
 }

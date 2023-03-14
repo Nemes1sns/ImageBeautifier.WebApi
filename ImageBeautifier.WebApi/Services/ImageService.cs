@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using ImageBeautifier.WebApi.Models;
+using ImageBeautifier.WebApi.Models.Response;
 using ImageBeautifier.WebApi.Services.Interfaces;
 
 namespace ImageBeautifier.WebApi.Services;
@@ -35,14 +36,17 @@ internal sealed class ImageService : IImageService
         return task.Id;
     }
 
-    public async Task<BeautifierTaskState> GetCurrentStateAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<GetBeautifiedImageResponse> GetCurrentStateAsync(Guid id, CancellationToken cancellationToken)
     {
         var task = await _context.LoadAsync<BeautifierTask>(id, cancellationToken);
         if (task == null)
         {
             throw new InvalidOperationException();
         }
-        
-        return task.State;
+
+        var imageUrl = !string.IsNullOrEmpty(task.FinishedFilePath)
+            ? _imageStorage.GetPublicUrl(task.FinishedFilePath)
+            : null;
+        return new(task.State, imageUrl);
     }
 }
